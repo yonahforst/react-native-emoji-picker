@@ -1,7 +1,7 @@
 ## Emoji picker for react-native
 Powered by the awesome `emojilib`
 
-[AnimatedExample](animated-example.gif)
+![AnimatedExample](animated-example.gif)
 
 ### Installation
 ```bash
