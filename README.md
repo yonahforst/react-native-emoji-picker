@@ -8,11 +8,11 @@ Powered by the awesome `emojilib`
 npm install react-native-emoji-picker
 ```
 
-#### EmojiPicker component
+### EmojiPicker component
 ```javascript
 const EmojiPicker = require('react-native-emoji-picker');
 
-class Overlay extends React.Component {
+class Main extends React.Component {
   _emojiSelected(emoji) {
     console.log(emoji)
   }
@@ -46,7 +46,7 @@ Optional overlay which wraps the picker in a modal-like component
 ```javascript
 const { EmojiOverlay } = require('react-native-emoji-picker');
 
-class Overlay extends React.Component {
+class Main extends React.Component {
   state = {
     showPicker: false,
   }
@@ -59,16 +59,19 @@ class Overlay extends React.Component {
   render() {
     return (
       <View style={styles.container}>
+
         <TouchableHighlight
           onPress={() => this.setState({showPicker: true})}>
           <Text> Show picker </Text>
         </TouchableHighlight>
+
         <EmojiOverlay 
           style={styles.emojiPicker} 
           visible={this.state.showPicker}
           onTapOutsize={() => this.setState({showPicker: false})}
           horizontal={true}
           onEmojiSelected={this._emojiSelected}/>
+
       </View>
     );
   }
@@ -76,7 +79,7 @@ class Overlay extends React.Component {
 
 ```
 
-### Component props
+#### Component props
 - (...all EmojiPicker props)
 - `visible` (Bool) - Required. Is the overlay visible
 - `onTapOutsize` (Function) - Required. Callback for when user taps outside the EmojiPicker area. Should set `visible` to `false`
