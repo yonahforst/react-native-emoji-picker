@@ -18,7 +18,8 @@
     "emoji-picker"
   ],
   "devDependencies": {
-    "react-native": "^0.17.0"
+    "react": "^0.14.8",
+    "react-native": "^0.25.0"
   },
   "dependencies": {
     "emojilib": "^2.0.2"
