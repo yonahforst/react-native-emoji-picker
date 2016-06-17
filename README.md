@@ -22,7 +22,6 @@ class Main extends React.Component {
       <View style={styles.container}>
         <EmojiPicker 
           style={styles.emojiPicker} 
-          horizontal={true}
           onEmojiSelected={this._emojiSelected}/>
       </View>
     );
@@ -33,12 +32,10 @@ class Main extends React.Component {
 
 #### Component props
 - `onEmojiSelected` (Function) - Required. Called when the user taps on an emoji.
-- `style` (Object) - Required. Standard view style for the enclosing component. Just like ScrollView, needs a bounded height to work.
-- `horizontal` (Bool) - Optional. Should the list of emojis scroll horizontally or vertically (default)
+- `style` (Object) - Optional. Standard view style for the enclosing component.
 - `clearButtonText` (String) - Optional. Alternate text for the clear button. Defaults to 'Clear'.
 - `hideClearButton` (Bool) - Optional. Hide the clear button. 
-- `listViewProps` (Object) - Optional. Override default ListView props.
-
+- `rows` (Number) - Optional. Number of rows used to show all emojis. Defaults to 7.
 
 ### EmojiOverlay component
 Optional overlay which wraps the picker in a modal-like component 
