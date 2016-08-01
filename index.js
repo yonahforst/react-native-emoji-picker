@@ -1,6 +1,7 @@
 'use strict'
 import React, {
   PropTypes,
+  Component,
 } from 'react'
 
 import {
@@ -41,15 +42,14 @@ const blacklistedEmojis = ['white_frowning_face', 'keycap_star', 'eject']
 const isAndroid = Platform.OS == 'android'
 const letterSpacing = 10
 const defaultEmojiSize = 30
-const categories = ['People', 'Nature', 'Foods', 'Activity', 'Places', 'Objects', 'Symbols', 'Flags']
 const filteredEmojis = emoji.filter(e => isAndroid ? !!e.google : !includes(blacklistedEmojis, e.short_name))
 // sort emojis by 'sort_order' then group them into categories
 const groupedAndSorted = groupBy(orderBy(filteredEmojis, 'sort_order'), 'category')
 // convert the emoji object to a character
 const emojisByCategory = mapValues(groupedAndSorted, group => group.map(charFromEmojiObj))
 
+const CATEGORIES = ['People', 'Nature', 'Foods', 'Activity', 'Places', 'Objects', 'Symbols', 'Flags']
 
-const EmojiPicker = (props) => {
 
   // instead listing emojis left-to-right we want to list them top-to-bottom.
   // we split them in to rows by sequentially taking every Xth value, where X is the number of rows
@@ -68,27 +68,66 @@ const EmojiPicker = (props) => {
     return array
   }
 
-  function renderSectionForCategory(c) {
-    let emojis = transposeEmojisVertically(emojisByCategory[c])
+
+class EmojiPicker extends Component {
+  state = {
+    categories: CATEGORIES.slice(0, 1),
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this._timeout)
+    this.setState({isVisible: false})
+  }
+
+
+
+  loadNextCategory() {
+    if (this.state.categories.length < CATEGORIES.length) {
+      this.setState({categories: CATEGORIES.slice(0, this.state.categories.length + 1)})
+    }
+  }
+
+  renderSectionForCategory(category) {
     return (
-     <View key={c} style={styles.innerContainer}>
-        <Text style={[styles.headerText, props.headerStyle]}>{c}</Text>
-        {emojis.map(array => <Row {...props} array={array} key={array[0]} />)}
+      <EmojiCategory 
+        {...this.props}
+        key={category}
+        category={category}
+        finishedLoading={() => this._timeout = setTimeout(this.loadNextCategory.bind(this), 100)} />
+      )
+  }
+
+  render() {
+    return (
+      <View style={this.props.style}>
+        <ScrollView horizontal={true}>
+          {this.state.categories.map(this.renderSectionForCategory.bind(this))}
+        </ScrollView>
+        {this.props.hideClearButton ? null : <ClearButon {...this.props} />}
       </View>
     )
   }
 
-  return (
-    <View style={props.style}>
-      <ScrollView horizontal={true}>
-        {categories.map(renderSectionForCategory)}
-      </ScrollView>
-      {props.hideClearButton ? null : <ClearButon {...props} />}
-    </View>
-  )
 }
 
-const Row = props => {
+class EmojiCategory extends Component {
+  componentDidMount() {
+    this.props.finishedLoading()
+  }
+
+  render() {
+    let emojis = transposeEmojisVertically(emojisByCategory[this.props.category])
+    let Component = Platform.OS == 'android' ? RowAndroid : RowIos
+    return (
+     <View key={this.props.category} style={styles.innerContainer}>
+        <Text style={[styles.headerText, this.props.headerStyle]}>{this.props.category}</Text>
+        {emojis.map(array => <Component {...this.props} array={array} key={array[0]} />)}
+      </View>
+    )
+  }
+}
+
+const RowIos = props => {
   let size = props.emojiSize || defaultEmojiSize
 
   function handlePress(event) {
@@ -99,14 +138,45 @@ const Row = props => {
     }
   }
 
+  let style = {
+    size: size,
+    letterSpacing: letterSpacing,
+    color: 'black',
+  }
+
   return (
     <TouchableWithoutFeedback onPress={handlePress}>
       <View>
-        <Text style={[styles.rowText, {fontSize: size}]} >
+        <Text style={style} >
           {props.array}
         </Text>
       </View>
     </TouchableWithoutFeedback>
+  )
+}
+
+const RowAndroid = props => {
+  let size = props.emojiSize || defaultEmojiSize
+
+  let style = {
+      fontSize: size-4,
+      color: 'black',
+      height: size+4,
+      width: size+4,
+      textAlign: 'center',
+    }
+
+  return (
+      <View style={styles.rowStyle}>
+        {props.array.map(emoji => 
+          <Text 
+            key={emoji} 
+            style={style} 
+            onPress={() => props.onEmojiSelected(emoji)}>
+            {emoji}
+          </Text>
+        )}
+      </View>
   )
 }
 
@@ -135,6 +205,7 @@ let styles = StyleSheet.create({
     padding: 15,
     textAlign: 'center',
     color: 'black',
+    justifyContent: 'center',
   },
   absolute: {
     position: 'absolute',
@@ -161,14 +232,14 @@ let styles = StyleSheet.create({
     flexWrap: 'wrap', 
     flexDirection: 'column',
   },
-  rowText: {
-    letterSpacing: letterSpacing,
-    paddingHorizontal: 5,
-    color: 'black',
-  },
   headerText: {
     padding: 5,
     color: 'black',
+    justifyContent: 'center',
+  },
+  rowStyle: {
+    flexDirection: 'row',
+    paddingHorizontal: letterSpacing/2,
   }
 })
 
