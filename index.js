@@ -76,10 +76,7 @@ class EmojiPicker extends Component {
 
   componentWillUnmount() {
     clearTimeout(this._timeout)
-    this.setState({isVisible: false})
   }
-
-
 
   loadNextCategory() {
     if (this.state.categories.length < CATEGORIES.length) {
@@ -87,7 +84,7 @@ class EmojiPicker extends Component {
     }
   }
 
-  renderSectionForCategory(category) {
+  renderCategory(category) {
     return (
       <EmojiCategory 
         {...this.props}
@@ -101,7 +98,7 @@ class EmojiPicker extends Component {
     return (
       <View style={this.props.style}>
         <ScrollView horizontal={true}>
-          {this.state.categories.map(this.renderSectionForCategory.bind(this))}
+          {this.state.categories.map(this.renderCategory.bind(this))}
         </ScrollView>
         {this.props.hideClearButton ? null : <ClearButon {...this.props} />}
       </View>
@@ -116,12 +113,29 @@ class EmojiCategory extends Component {
   }
 
   render() {
-    let emojis = transposeEmojisVertically(emojisByCategory[this.props.category])
-    let Component = Platform.OS == 'android' ? RowAndroid : RowIos
+    let emojis = emojisByCategory[this.props.category]
+    let size = this.props.emojiSize || defaultEmojiSize
+    let style = {
+      fontSize: size-4,
+      color: 'black',
+      height: size+4,
+      width: size+4,
+      textAlign: 'center',
+      padding: 5
+    }
+
     return (
-     <View key={this.props.category} style={styles.innerContainer}>
+     <View style={{flex: 0}}>
         <Text style={[styles.headerText, this.props.headerStyle]}>{this.props.category}</Text>
-        {emojis.map(array => <Component {...this.props} array={array} key={array[0]} />)}
+        <View style={styles.innerContainer}>
+          {emojis.map(e => 
+            <Text style={style} 
+              key={e} 
+              onPress={() => this.props.onEmojiSelected(e)}>
+              {e}
+            </Text>
+          )}
+        </View>    
       </View>
     )
   }
@@ -229,6 +243,7 @@ let styles = StyleSheet.create({
     opacity: 0.5,
   },
   innerContainer: {
+    flex: 1,
     flexWrap: 'wrap', 
     flexDirection: 'column',
   },
