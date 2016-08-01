@@ -38,10 +38,10 @@ const charFromUtf16 = utf16 => String.fromCodePoint(...utf16.split('-').map(u =>
 const charFromEmojiObj = obj => charFromUtf16(obj.unified)
 const blacklistedEmojis = ['white_frowning_face', 'keycap_star', 'eject']
 
-
 const isAndroid = Platform.OS == 'android'
 const letterSpacing = 10
 const defaultEmojiSize = 30
+const padding = 5
 const filteredEmojis = emoji.filter(e => isAndroid ? !!e.google : !includes(blacklistedEmojis, e.short_name))
 // sort emojis by 'sort_order' then group them into categories
 const groupedAndSorted = groupBy(orderBy(filteredEmojis, 'sort_order'), 'category')
@@ -49,24 +49,6 @@ const groupedAndSorted = groupBy(orderBy(filteredEmojis, 'sort_order'), 'categor
 const emojisByCategory = mapValues(groupedAndSorted, group => group.map(charFromEmojiObj))
 
 const CATEGORIES = ['People', 'Nature', 'Foods', 'Activity', 'Places', 'Objects', 'Symbols', 'Flags']
-
-
-  // instead listing emojis left-to-right we want to list them top-to-bottom.
-  // we split them in to rows by sequentially taking every Xth value, where X is the number of rows
-  function transposeEmojisVertically(emojis, rowCount = 7) {
-    let array = []
-    for (var i = 0; i < rowCount; i++) {
-      let row = []
-      for (var n = 0; n < emojis.length/rowCount; n++) {
-        let index = i + n * rowCount
-        if (index < emojis.length) {
-          row.push(emojis[index])
-        }
-      }
-      array.push(row)
-    }
-    return array
-  }
 
 
 class EmojiPicker extends Component {
@@ -96,7 +78,7 @@ class EmojiPicker extends Component {
 
   render() {
     return (
-      <View style={this.props.style}>
+      <View style={[styles.container, this.props.style]}>
         <ScrollView horizontal={true}>
           {this.state.categories.map(this.renderCategory.bind(this))}
         </ScrollView>
@@ -121,13 +103,13 @@ class EmojiCategory extends Component {
       height: size+4,
       width: size+4,
       textAlign: 'center',
-      padding: 5
+      padding: padding,
     }
 
     return (
-     <View style={{flex: 0}}>
+     <View style={style.categoryOuter}>
         <Text style={[styles.headerText, this.props.headerStyle]}>{this.props.category}</Text>
-        <View style={styles.innerContainer}>
+        <View style={styles.categoryInner}>
           {emojis.map(e => 
             <Text style={style} 
               key={e} 
@@ -141,58 +123,6 @@ class EmojiCategory extends Component {
   }
 }
 
-const RowIos = props => {
-  let size = props.emojiSize || defaultEmojiSize
-
-  function handlePress(event) {
-    let i = Math.floor(event.nativeEvent.locationX/(size + 5 + letterSpacing/2))
-    if (i < props.array.length) {
-      let emoji = props.array[i]
-      props.onEmojiSelected(emoji)  
-    }
-  }
-
-  let style = {
-    size: size,
-    letterSpacing: letterSpacing,
-    color: 'black',
-  }
-
-  return (
-    <TouchableWithoutFeedback onPress={handlePress}>
-      <View>
-        <Text style={style} >
-          {props.array}
-        </Text>
-      </View>
-    </TouchableWithoutFeedback>
-  )
-}
-
-const RowAndroid = props => {
-  let size = props.emojiSize || defaultEmojiSize
-
-  let style = {
-      fontSize: size-4,
-      color: 'black',
-      height: size+4,
-      width: size+4,
-      textAlign: 'center',
-    }
-
-  return (
-      <View style={styles.rowStyle}>
-        {props.array.map(emoji => 
-          <Text 
-            key={emoji} 
-            style={style} 
-            onPress={() => props.onEmojiSelected(emoji)}>
-            {emoji}
-          </Text>
-        )}
-      </View>
-  )
-}
 
 const ClearButon = props => {
   return (
@@ -215,11 +145,15 @@ const EmojiOverlay = props => (
 )
 
 let styles = StyleSheet.create({
+  container: {
+    padding: padding,
+  },
   clearButton: {
+    flex: 1,
     padding: 15,
     textAlign: 'center',
     color: 'black',
-    justifyContent: 'center',
+    textAlignVertical: 'center',
   },
   absolute: {
     position: 'absolute',
@@ -242,20 +176,20 @@ let styles = StyleSheet.create({
     backgroundColor: 'grey',
     opacity: 0.5,
   },
-  innerContainer: {
+  categoryOuter: {
+    flex: -1,
+  },
+  categoryInner: {
     flex: 1,
     flexWrap: 'wrap', 
     flexDirection: 'column',
   },
   headerText: {
-    padding: 5,
+    padding: padding,
     color: 'black',
     justifyContent: 'center',
+    textAlignVertical: 'center',
   },
-  rowStyle: {
-    flexDirection: 'row',
-    paddingHorizontal: letterSpacing/2,
-  }
 })
 
 EmojiPicker.propTypes = {
