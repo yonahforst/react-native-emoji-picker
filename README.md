@@ -1,5 +1,5 @@
 ## Emoji picker for react-native
-Powered by the awesome `emojilib`
+Powered by the awesome `emoji-datasource`
 
 ![AnimatedExample](animated-example.gif)
 
