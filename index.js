@@ -98,7 +98,7 @@ class EmojiCategory extends Component {
     let emojis = emojisByCategory[this.props.category]
     let size = this.props.emojiSize || defaultEmojiSize
     let style = {
-      fontSize: size-4,
+      fontSize: size-10,
       color: 'black',
       height: size+4,
       width: size+4,
