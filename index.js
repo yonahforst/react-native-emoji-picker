@@ -105,10 +105,11 @@ class EmojiCategory extends Component {
       textAlign: 'center',
       padding: padding,
     }
+    let showCategoryHeader = this.props.showCategoryHeader || false;
 
     return (
      <View style={style.categoryOuter}>
-        <Text style={[styles.headerText, this.props.headerStyle]}>{this.props.category}</Text>
+        {showCategoryHeader ? (<Text style={[styles.headerText, this.props.headerStyle]}>{this.props.category}</Text>) : null}
         <View style={styles.categoryInner}>
           {emojis.map(e => 
             <Text style={style} 
