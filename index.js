@@ -100,8 +100,6 @@ class EmojiCategory extends Component {
     let style = {
       fontSize: size-4,
       color: 'black',
-      height: size+4,
-      width: size+4,
       textAlign: 'center',
       padding: padding,
     }
