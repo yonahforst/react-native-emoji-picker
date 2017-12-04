@@ -21,6 +21,7 @@
   "dependencies": {
     "emoji-datasource": "^2.4.4",
     "lodash": "^4.11.1",
+    "prop-types": "^15.6.0",
     "string.fromcodepoint": "^0.2.1"
   },
   "author": "Yonah Forst <yonaforst@hotmail.com> (https://github.com/yonahforst)",
