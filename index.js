@@ -1,14 +1,10 @@
-'use strict'
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-
+import React from 'react'
 
 import {
   StyleSheet,
   ScrollView,
   Text,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
   Platform,
 } from 'react-native'
@@ -50,7 +46,7 @@ const emojisByCategory = mapValues(groupedAndSorted, group => group.map(charFrom
 const CATEGORIES = ['People', 'Nature', 'Foods', 'Activity', 'Places', 'Objects', 'Symbols', 'Flags']
 
 
-class EmojiPicker extends Component {
+class EmojiPicker extends React.Component {
   state = {
     categories: CATEGORIES.slice(0, 1),
   }
@@ -188,9 +184,5 @@ let styles = StyleSheet.create({
     textAlignVertical: 'center',
   },
 })
-
-EmojiPicker.propTypes = {
-  onEmojiSelected: PropTypes.func.isRequired,
-}
 
 export { EmojiPicker as default, EmojiOverlay as EmojiOverlay }
