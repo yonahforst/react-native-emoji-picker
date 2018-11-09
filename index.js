@@ -84,7 +84,7 @@ class EmojiPicker extends React.Component {
 
 }
 
-class EmojiCategory extends Component {
+class EmojiCategory extends React.Component {
   componentDidMount() {
     this.props.finishedLoading()
   }
